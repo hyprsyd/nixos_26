@@ -128,7 +128,13 @@
     };
   };
 
+  xdg.configFile."nvim/init.lua" = {
+    source = /home/sid/nvim/init.lua;
+    force = true;
+  };
+
   home.packages = with pkgs; [
+    claude-code
     alacritty
     foot
     waybar
