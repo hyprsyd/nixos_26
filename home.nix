@@ -112,6 +112,25 @@
         export VISUAL="nvim"
         export GPG_TTY="$(tty)"
         export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+        update() {
+              (
+                set -e
+                cd /etc/nixos
+
+                sudo nix flake update
+                sudo git add .
+
+                # Only commit and push if flake.lock (or other files) actually changed
+                if ! sudo git diff --cached --quiet; then
+                  sudo git commit -s -m "incremental"
+                  sudo git push || echo "Warning: git push failed, continuing with rebuild..."
+                else
+                  echo "No flake changes to commit; skipping git commit/push."
+                fi
+
+                sudo nixos-rebuild switch --flake .#workstation
+              )
+            }
       '';
     };
   };
