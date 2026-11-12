@@ -36,7 +36,6 @@
     download-buffer-size = 67108864;
     connect-timeout = 5;
     substituters = [
-      "https://mirror.sjtu.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
       "https://cache.nixos.org"
     ];
