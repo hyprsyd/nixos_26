@@ -4,6 +4,7 @@
   pkgs,
   antigravity-nix,
   zen-browser,
+  claude-code,
   ...
 }:
 
@@ -12,17 +13,15 @@
   home.homeDirectory = "/home/sid";
   home.stateVersion = "26.05";
 
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+  };
+
   programs = {
     obsidian = {
       enable = true;
       vaults.notes.target = "Documents/Obsidian";
-    };
-
-    neovim = {
-      enable = true;
-      defaultEditor = true;
-      viAlias = true;
-      vimAlias = true;
     };
 
     zsh = {
@@ -71,6 +70,8 @@
         ];
       };
       shellAliases = {
+        vi = "nvim";
+        vim = "nvim";
         ll = "ls -lah --color=auto";
         la = "ls -A";
         gs = "git status -sb";
@@ -86,6 +87,9 @@
         reload = "exec zsh";
       };
       initContent = ''
+        # Source local untracked secrets (e.g. GEMINI_API_KEY) if present
+        [[ -f ~/.secrets ]] && source ~/.secrets
+
         source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
         [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
         source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
@@ -128,13 +132,15 @@
     };
   };
 
-  xdg.configFile."nvim/init.lua" = {
-    source = /home/sid/nvim/init.lua;
+  # Symlink entire nvim directory so colorschemes and configs are available
+  xdg.configFile."nvim" = {
+    source = config.lib.file.mkOutOfStoreSymlink "/home/sid/nvim";
     force = true;
   };
 
   home.packages = with pkgs; [
-    claude-code
+    neovim
+    claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default
     alacritty
     foot
     waybar
@@ -147,6 +153,7 @@
     wl-clipboard
     wl-gammarelay-rs
     networkmanagerapplet
+    luarocks
     kdePackages.dolphin
     pavucontrol
     dconf-editor
@@ -156,10 +163,15 @@
     postman
     bruno
     bruno-cli
-    zen-browser.packages.x86_64-linux.default
-    antigravity-nix.packages.x86_64-linux.google-antigravity-cli
-    antigravity-nix.packages.x86_64-linux.google-antigravity-no-fhs
-    antigravity-nix.packages.x86_64-linux.google-antigravity-ide
+    zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+    # Antigravity CLI and FHS IDE (with Chromium override; removed conflicting no-fhs build)
+    antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-cli
+    (antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-ide.override {
+      browserPkg = zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      useUserProfile = false;
+    })
+
     git
     git-lfs
     gh
