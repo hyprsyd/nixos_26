@@ -35,14 +35,23 @@
     max-substitution-jobs = 32;
     download-buffer-size = 67108864;
     connect-timeout = 5;
+    stalled-download-timeout = 15; # Fail over quickly if an Asian mirror stalls mid-download
+    fallback = true;
+
+    # Lower priority number = queried first
     substituters = [
-      "https://mirror.sjtu.edu.cn/nix-channels/store"
-      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-      "https://cache.nixos.org"
+      "https://mirrors.ustc.edu.cn/nix-channels/store?priority=10"
+      "https://mirror.iscas.ac.cn/nix-channels/store?priority=20"
+      "https://mirror.sjtu.edu.cn/nix-channels/store?priority=25"
+      "https://cache.nixos.org?priority=30"
+      "https://nix-community.cachix.org?priority=40"
+      "https://claude-code.cachix.org?priority=41"
     ];
 
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="
     ];
     trusted-users = [
       "root"
