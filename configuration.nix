@@ -169,6 +169,20 @@
     }
   ];
 
+  fileSystems."/home/sid/mnt" = {
+    device = "/dev/disk/by-uuid/6d8a6aa4-9cec-4865-9b51-b1a20100051d";
+    fsType = "ext4";
+    options = [
+      "defaults"
+      "noatime"
+      "nofail"
+    ];
+  };
+
+  systemd.tmpfiles.rules = [
+    "d /home/sid/mnt 0775 sid users -"
+  ];
+
   boot.zswap = {
     enable = true;
     compressor = "zstd";
@@ -176,6 +190,7 @@
   };
 
   services = {
+    fstrim.enable = true;
     zfs = {
       autoScrub.enable = true;
       trim.enable = true;
