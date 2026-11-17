@@ -165,6 +165,9 @@
     waybar
     hyprpaper
     zapzap
+    cloudflared
+    cloudflare-ddns
+    cloudflare-cli
     hypridle
     rofi-unwrapped
     nwg-look
