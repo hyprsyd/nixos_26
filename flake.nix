@@ -51,6 +51,8 @@
         system = "x86_64-linux";
         modules = [
           ./configuration.nix
+          ./local-dns.nix
+          ./media-container.nix
           {
             nixpkgs.overlays = [ claude-code.overlays.default ];
           }

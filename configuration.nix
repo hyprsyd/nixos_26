@@ -76,10 +76,15 @@
     hostName = "workstation";
     hostId = "8425e349"; # Required by ZFS to identify this machine's pool
     networkmanager.enable = true;
-    nameservers = [
-      "1.1.1.1"
-      "8.8.8.8"
-    ];
+    # Prefer wired Ethernet (enp42s0 IPv4) over secondary Wi-Fi IPv6 (wlp41s0)
+    getaddrinfo.precedence = {
+      "::ffff:0:0/96" = 100;
+      "::1/128" = 50;
+      "::/0" = 40;
+      "2002::/16" = 30;
+      "::/96" = 20;
+      "fc00::/7" = 5;
+    };
   };
 
   time.timeZone = "Asia/Calcutta";
@@ -137,6 +142,8 @@
       gtk3
       gtkmm3
       gsettings-qt
+      neovim
+      git
       glib
       polkit_gnome
       tailscale
@@ -210,7 +217,10 @@
     ];
     tailscale.enable = true;
     printing.enable = true;
-    openssh.enable = true;
+    openssh = {
+      enable = true;
+      settings.PermitRootLogin = "no";
+    };
     gnome.gnome-keyring.enable = true;
     pipewire = {
       enable = true;
@@ -236,4 +246,7 @@
       options = "eurosign:e,caps:escape";
     };
   };
+
+  # Prevent rapid multi-interface resolvconf updates at boot from tripping nscd start-limit-hit
+  systemd.services.nscd.unitConfig.StartLimitBurst = 30;
 }
