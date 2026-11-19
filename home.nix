@@ -115,6 +115,7 @@
         update() {
               (
                 set -e
+                sudo -i
                 cd /etc/nixos
 
                 sudo nix flake update
